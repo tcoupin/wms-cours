@@ -1,0 +1,339 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+
+		<title>Cours WMS de Thibault Coupin</title>
+
+		<link rel="stylesheet" href="assets/css/reset.css">
+		<link rel="stylesheet" href="css/flowtime.css">
+		<link rel="stylesheet" href="css/themes/default.css">
+		<link rel="stylesheet" href="assets/css/prism.css">
+		<link rel="stylesheet" href="css/custom.css">
+		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+	</head>
+	<body>
+
+		<div class="flowtime">
+			<div data-id="main" class="ft-section">
+				<div data-id="titre" class="ft-page">
+					<div class="stack-center">
+						<div class="stacked-center">
+							<h1>Le protocole WMS</h1>
+                            <h2>Web Map Service</h2>
+						</div>
+					</div>
+				</div>
+				<div data-id="plan" class="ft-page">
+					<h1>Plan</h1>
+					<ol>
+						<li><a href="#/protocole">Le protocole</a></li>
+						<li><a href="#/exemples">Des exemples à la main</a></li>
+						<li><a href="#/openlayers">Dans OpenLayers 3</a></li>
+						<li><a href="#/leaflet">Dans Leaflet</a></li>
+						<li><a href="#/serveurs">Serveurs</a></li>
+					</ol>
+				</div>
+				<div class="ft-page" data-id="whoami">
+					<h1>Moi</h1>
+					<h3>Thibault Coupin</h3>
+					<ul>
+						<li><i class="fa fa-building-o"></i> Institut National de l'Information Géographique et Forestière (<a href="www.ign.fr" target="_blank">IGN</a>)</li>
+                        <li><i class="fa fa-link"></i> Ingénieur dans l'équipe <a href="http://www.geoportail.gouv.fr" target="_blank">Géoportail</a></li>
+						<li><small class="fa fa-envelope-o"></small> thibault.coupin (AT) ign.fr</li>
+      					<li><i class="fa fa-twitter"></i><a target="_blank" href="https://twitter.com/thibbojunior">@thibbojunior</a></li>
+      					<li><i class="fa fa-github"></i> <a href="https://github.com/tcoupin" target="_blank">tcoupin</a></li>
+					</ul>
+				</div>
+				<div class="ft-page">
+					<h1>Ce cours</h1>
+					<h3>est</h3>
+					<ul>
+						<li>super intéressant</li>
+						<li>open-source sous licence GNU GPL</li>
+						<li>disponible sur <a href="https://tcoupin.github.io/wms-cours/" target="_blank">https://tcoupin.github.io/wms-cours/</a></li>
+						<li>propulsé fièrement par <a href="https://github.com/marcolago/flowtime.js" target="_blank">Flowtime.js</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="ft-section" data-id="protocole">
+				<div class="ft-page" data-id="whatsthis">
+					<h1>What's this ?!</h1>
+					<ul>
+						<li class="ft-fragment">Standard de l'OGC pour accéder à de la donnée cartographiée (donc image)<br></li>
+                        <li class="ft-fragment">Versions actuelles : 1.1.1 et 1.3.0<br></li>
+                        <li class="ft-fragment">Définit :
+                            <ul>
+                                <li>comment interroger le serveur</li>
+                                <li>comment le serveur doit répondre (exceptions comprises)</li>
+                            </ul>
+                        </li>
+                        <li class="ft-fragment">C'est une surcharge du protocole HTTP</li>
+                        <li class="ft-fragment">Tous les documents sont sur le <a href="http://www.opengeospatial.org/standards/wms" target="_blank">site de l'OGC</a></li>
+                    </ul>
+				</div>
+                <div class="ft-page" data-id="corrollaire">
+                    <h1>What's this ?!</h1>
+                    <h3>Standard corrollaire à WMS :</h3>
+                    <ul>
+                        <li class="ft-fragment">Style Layer Descriptor (SLD) / Symbology Encoding (SE)
+                            <ul>
+                                <li>Pour la défnition de style : quelle légende utiliser ? Règles de symbolisation</li>
+                            </ul>
+                        </li>
+                        <li class="ft-fragment">Filter Encoding (FE) :
+                            <ul>
+                                <li>Pour la définition des règles de symbolisation : comment appliquer la légende ? Règles de sélection</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="ft-page" data-id="operation">
+                    <h1>Les opérations</h1>
+                    <ul>
+                        <li class="ft-fragment step"><b>GetCapabilities</b> : découvrir le service
+                        	<ul>
+                        		<li>identité de la personne physique/morale getionnaire du service</li>
+                        		<li>fonctionnalités du service : opérations, crs, format d'image, <b>liste des couches</b></li>
+                        		<li>réponse en XML, le schéma est définit dans le standard</li>
+                        	</ul>
+                        </li>
+                        <li class="ft-fragment step"><b>GetMap</b> : utiliser le service
+                        	<ul>
+                        		<li>l'utilisateur (le client carto) définit format d'image, crs, emprise, couches</li>
+                        		<li>la réponse est une image</li>
+                        	</ul>
+                        </li>
+                        <li class="ft-fragment step"><b>GetFeatureInfo</b> <small>(optionnel)</small> : obtenir des informations supplémentaires
+                        	<ul>
+                        		<li>une fois le morceau de carte générée par l'opération GetMap, l'utilisateur veut de l'information sur les éléments qui la composent</li>
+                        		<li>il faut fournir la requête GetMap et les coordonnées des pixels cliqués</li>
+                        	</ul>
+                        </li>
+                    </ul>
+                </div>
+			</div>
+			<div class="ft-section" data-id="exemples">
+				<div class="ft-page" data-id="exemples">
+					<h1>Exemples</h1>
+					<h2>sur le service WMS Vecteur Inspire</h2>
+					<blockquote>http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms</blockquote>
+					Sur le Géoportail, une clé d'identification est nécessaire : site <a href="http://pro.ign.fr/" target="_blank">pro.ign.fr</a>
+				</div>
+				<div class="ft-page" data-id="getcapabilities-req">
+					<h1>GetCapabilities <small>- Requête</small></h1>
+					<blockquote><a href="http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?service=WMS&request=GetCapabilities" target="_blank">http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?service=WMS&request=GetCapabilities</a></blockquote>
+					<table class="ft-table ft-table-striped">
+						<tr>
+							<th>Paramètre</th>
+							<th>Valeur</th>
+							<th>Commentaire</th>
+						</tr>
+						<tr>
+							<td>service</td>
+							<td>WMS</td>
+							<td>obligatoire</td>
+						</tr>
+						<tr>
+							<td>request</td>
+							<td>GetCapabilities</td>
+							<td>obligatoire</td>
+						</tr>
+						<tr>
+							<td>version</td>
+							<td>1.1.1, 1.3.0</td>
+							<td>optionnel, par défaut la version la plus récente supportée</td>
+						</tr>
+					</table>
+				</div>
+				<div class="ft-page" data-id="getcapabilities-res">
+					<h1>GetCapabilities <small>- Réponse</small></h1>
+					<pre>
+						<code class="language-markup">
+&lt;WMS_Capabilities xmlns=&quot;http://www.opengis.net/wms&quot; version=&quot;1.3.0&quot;&gt;
+	&lt;Service&gt; [...] &lt;/Service&gt;
+	&lt;Capability&gt; [...] &lt;/Capability&gt;
+&lt;/WMS_Capabilities&gt;
+						</code>
+					</pre>
+					<ul>
+						<li class="ft-fragment"><b>Service</b> : les informations sur le service : titre, présentation, contact...</li>
+						<li class="ft-fragment"><b>Capability</b> :
+							<ul>
+								<li class="ft-fragment">les requêtes supportées et les paramètres supportés</li>
+								<li class="ft-fragment">les formats des exceptions</li>
+								<li class="ft-fragment">les couches : nom, emprise, CRS...  <i class="fa fa-warning"> héritage entre les couches</i></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="ft-page" data-id="getmap-req">
+					<h1>GetMap <small>- Requête (en 1.3.0)</small></h1>
+					<table class="ft-table ft-table-striped">
+						<tr>
+							<th>Paramètre</th>
+							<th>Valeur</th>
+							<th>Description</th>
+						</tr>
+						<tr>
+							<td>service</td>
+							<td>WMS</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>request</td>
+							<td>GetMap</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>version</td>
+							<td>1.3.0</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>layers</td>
+							<td>couche1,couche2</td>
+							<td>du "z-level" bas vers le haut</td>
+						</tr>
+						<tr>
+							<td>styles</td>
+							<td>style1,style2</td>
+							<td>style1 pour la couche1 ...</td>
+						</tr>
+						<tr>
+							<td>crs</td>
+							<td>ex : EPSG:2154</td>
+							<td>crs de sortie</td>
+						</tr>
+						<tr>
+							<td>bbox</td>
+							<td>x1,y1,x2,y2</td>
+							<td>ordre xy ou yx selon le CRS</td>
+						</tr>
+						<tr>
+							<td>width</td>
+							<td>en px</td>
+							<td>largeur en sortie</td>
+						</tr>
+						<tr>
+							<td>height</td>
+							<td>en px</td>
+							<td>hauteur en largeur</td>
+						</tr>
+						<tr>
+							<td>format</td>
+							<td>ex : image/jpeg</td>
+							<td>selon les capacités du serveur</td>
+						</tr>
+					</table>
+					<br>
+					ainsi que transparent, bgcolor, time, elevation...
+				</div>
+				<div class="ft-page" data-id="getmap-res">
+					<h1>GetMap <small>- Réponse (en 1.3.0)</small></h1>
+					<blockquote>http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?<br>
+					<span class="ft-fragment step">SERVICE=WMS</span><br>
+					<span class="ft-fragment step">&VERSION=1.3.0</span><br>
+					<span class="ft-fragment step">&REQUEST=GetMap</span><br>
+					<span class="ft-fragment step">&LAYERS=BU.Building,TN.RoadTransportNetwork,TN.RailTransportNetwork,AD.Address</span><br>
+					<span class="ft-fragment step">&STYLES=inspire_common%3ADEFAULT</span><br>
+					<span class="ft-fragment step">&FORMAT=image%2Fpng</span><br>
+					<span class="ft-fragment step">&CRS=CRS%3A84</span><br>
+					<span class="ft-fragment step">&BBOX=2.4202285299018094,48.844417603816055,2.426722157926865,48.846329254834885</span><br>
+					<span class="ft-fragment step">&WIDTH=1210&HEIGHT=541</span></blockquote>
+					<div class="stack-center">
+						<a href="http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?VERSION=1.3.0&LAYERS=BU.Building,TN.RoadTransportNetwork,TN.RailTransportNetwork,AD.Address&EXCEPTIONS=xml&FORMAT=image%2Fpng&TRANSPARENT=false&STYLES=inspire_common%3ADEFAULT&SERVICE=WMS&REQUEST=GetMap&CRS=CRS%3A84&BBOX=2.4202285299018094,48.844417603816055,2.426722157926865,48.846329254834885&WIDTH=1210&HEIGHT=541" target="_blank"><img class="stacked-center ft-fragment step" src="http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?VERSION=1.3.0&LAYERS=BU.Building,TN.RoadTransportNetwork,TN.RailTransportNetwork,AD.Address&EXCEPTIONS=xml&FORMAT=image%2Fpng&TRANSPARENT=false&STYLES=inspire_common%3ADEFAULT&SERVICE=WMS&REQUEST=GetMap&CRS=CRS%3A84&BBOX=2.4202285299018094,48.844417603816055,2.426722157926865,48.846329254834885&WIDTH=1210&HEIGHT=541" alt="une requête wms"></a>
+					</div>
+				</div>
+				<div class="ft-page" data-id="getfeatureinfo-req">
+					<h1>GetFeatureInfo <small>- Requête (en 1.3.0)</small></h1>
+					<table class="ft-table ft-table-striped">
+						<tr>
+							<th>Paramètre</th>
+							<th>Valeur</th>
+							<th>Description</th>
+						</tr>
+						<tr>
+							<td colspan="2">Les paremètres de la requête GetMap (sauf request)</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>request</td>
+							<td>GetFeatureInfo</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>query_layers</td>
+							<td>couche1,couche3</td>
+							<td>sur quelle(s) couche(s) veut-on de l'information ?</td>
+						</tr>
+						<tr>
+							<td>info_format</td>
+							<td>ex: text/html</td>
+							<td>selon les capacités du serveur</td>
+						</tr>
+						<tr>
+							<td>i</td>
+							<td>coordonnées du pixel de l'image GetMap</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>j</td>
+							<td>"</td>
+							<td></td>
+						</tr>
+					</table>
+					<br>
+					ainsi que feature_count, exceptions
+				</div>
+				<div class="ft-page" data-id="getfeatureinfo-res">
+					<h1>GetFeatureInfo <small>- Réponse (en 1.3.0)</small></h1>
+					<blockquote>http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?[requête GetMap]<br>
+						<span class="ft-fragment step">&REQUEST=GetFeatureInfo</span><br>
+						<span class="ft-fragment step">&i=810&j=170</span><br>
+						<span class="ft-fragment step">&query_layers=BU.Building,AD.Address</span><br>
+						<span class="ft-fragment step">&info_format=text/plain</span><br>
+					</blockquote>
+
+					<iframe class="ft-fragment" src="http://wxs.ign.fr/wnow33wqimoktpt0unhgwo0m/inspire/v/wms?VERSION=1.3.0&LAYERS=BU.Building,TN.RoadTransportNetwork,TN.RailTransportNetwork,AD.Address&EXCEPTIONS=xml&FORMAT=image%2Fpng&TRANSPARENT=true&STYLES=inspire_common%3ADEFAULT&SERVICE=WMS&REQUEST=GetFeatureInfo&CRS=CRS%3A84&BBOX=2.4202285299018094,48.844417603816055,2.426722157926865,48.846329254834885&WIDTH=1210&HEIGHT=541&i=810&j=170&query_layers=BU.Building,AD.Address&info_format=text/plain">
+					</iframe>
+				</div>
+			</div>
+			<div class="ft-section" data-id="openlayers">
+				<div class="ft-page">
+				Work in progress
+				</div>
+			</div>
+			<div class="ft-section" data-id="leaflet">
+				<div class="ft-page">
+				Work in progress
+				</div>
+			</div>
+			<div class="ft-section" data-id="serveurs">
+				<div class="ft-page">
+				Work in progress
+				</div>
+			</div>
+		</div>
+
+		<script src="js/brav1toolbox.js"></script>
+		<script src="js/flowtime.js"></script>
+		<script src="assets/js/prism.js"></script>
+		<script type="text/javascript">
+		
+
+		// Configuration API test
+		Flowtime.showProgress(true);
+		// Flowtime.fragmentsOnSide(true);
+		// Flowtime.fragmentsOnBack(true);
+		// Flowtime.useHistory(true);
+		// Flowtime.slideInPx(true);
+		// Flowtime.sectionsSlideToTop(true);
+		// Flowtime.backFromPageToTop(true);
+		// Flowtime.gridNavigation(false);
+		// Flowtime.useOverviewVariant(true);
+		Flowtime.parallaxInPx(true);		
+		// starts the application with configuration options
+		Flowtime.start();
+	</script>
+	</body>
+</html>
